@@ -1,47 +1,99 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
-
-const jokes = [
-  "Why don’t scientists trust atoms? Because they make up everything!",
-  "Why did the math book look sad? Because it had too many problems.",
-  "I'm reading a book on anti-gravity. It's impossible to put down!",
-];
-
-const funFacts = [
-  "A crocodile can't stick its tongue out!",
-  "Bananas are berries, but strawberries aren’t.",
-  "You can't hum while holding your nose closed. Try it!",
-];
-
-const memeImages = [
-  'https://i.imgflip.com/1bij.jpg',  // classic meme
-  'https://i.imgflip.com/30b1gx.jpg',
-  'https://i.imgflip.com/4acd7j.png',
-];
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image, Linking, TouchableOpacity } from 'react-native';
 
 const Home = () => {
-  const [joke, setJoke] = useState('');
-  const [fact, setFact] = useState('');
-  const [meme, setMeme] = useState('');
+  const [joke, setJoke] = useState(null);
+  const [quote, setQuote] = useState(null);
+  const [fact, setFact] = useState(null);
+  const [meme, setMeme] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
 
   useEffect(() => {
-    setJoke(jokes[Math.floor(Math.random() * jokes.length)]);
-    setFact(funFacts[Math.floor(Math.random() * funFacts.length)]);
-    setMeme(memeImages[Math.floor(Math.random() * memeImages.length)]);
+    const fetchData = async () => {
+      try {
+        const jokeRes = await fetch('https://official-joke-api.appspot.com/random_joke');
+        const memeRes = await fetch('https://meme-api.com/gimme');
+                //   fetch(''),
+ const quoteRes = await fetch('https://uselessfacts.jsph.pl/random.json?language=en');
+
+  
+        if (!jokeRes.ok || !memeRes.ok) {
+          throw new Error('One or more API requests failed');
+        }
+  
+        const jokeData = await jokeRes.json();
+        const memeData = await memeRes.json();
+        const quoteData= await quoteRes.json();
+  
+        setJoke(jokeData);
+        setMeme(memeData);
+        setFact(quoteData);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
   }, []);
+  
+
+  if (loading) {
+    return <ActivityIndicator style={{ flex: 1 }} size="large" color="#6200ea" />;
+  }
+
+  if (error) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ color: 'red' }}>Error: {error}</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.heading}>🎉 Daily Entertainment</Text>
+      <Text style={styles.heading}>🎉 Welcome to Daily Buzz</Text>
 
-      <Text style={styles.sectionTitle}>😂 Joke of the Day</Text>
-      <Text style={styles.content}>{joke}</Text>
+      {joke && (
+        <View style={styles.card}>
+          <Text style={styles.title}>😂 Joke of the Day</Text>
+          <Text style={styles.text}>{joke.setup}</Text>
+          <Text style={styles.punchline}>👉 {joke.punchline}</Text>
+        </View>
+      )}
+        {fact && (
+        <View style={styles.card}>
+          <Text style={styles.title}>📘 Fun Fact</Text>
+          <Text style={styles.text}>{fact.text}</Text>
+        </View>
+      )}
 
-      <Text style={styles.sectionTitle}>🤓 Fun Fact</Text>
-      <Text style={styles.content}>{fact}</Text>
+     
+       {meme && (
+        <View style={styles.card}>
+          <Text style={styles.title}>🔥 Meme of the Day</Text>
+          <Text style={styles.text}>{meme.title}</Text>
+          <TouchableOpacity onPress={() => Linking.openURL(meme.postLink)}>
+            <Image source={{ uri: meme.url }} style={styles.memeImage} />
+          </TouchableOpacity>
+          <Text style={styles.author}>From r/{meme.subreddit}</Text>
+        </View>
+      )}
+       {quote && (
+        <View style={styles.card}>
+          <Text style={styles.title}>💬 Inspiring Quote</Text>
+          <Text style={styles.text}>"{quote.content}"</Text>
+          <Text style={styles.author}>— {quote.author}</Text>
+        </View>
+      )}
 
-      <Text style={styles.sectionTitle}>📸 Meme of the Day</Text>
-      <Image style={styles.memeImage} source={{ uri: meme }} />
+    
+
+     
     </ScrollView>
   );
 };
@@ -50,8 +102,29 @@ export default Home;
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#fff' },
-  heading: { fontSize: 28, fontWeight: 'bold', marginBottom: 20, color: '#E91E63', textAlign: 'center' },
-  sectionTitle: { fontSize: 20, fontWeight: 'bold', marginTop: 20, color: '#333' },
-  content: { fontSize: 16, marginTop: 10, color: '#555' },
-  memeImage: { height: 250, width: '100%', marginTop: 10, borderRadius: 10 },
+  heading: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#6200ea',
+    textAlign: 'center',
+  },
+  card: {
+    backgroundColor: '#f9f9f9',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    elevation: 3,
+  },
+  title: { fontSize: 20, fontWeight: '600', color: '#333' },
+  text: { fontSize: 16, marginTop: 10, color: '#555' },
+  punchline: { fontSize: 18, fontWeight: 'bold', color: '#E91E63', marginTop: 5 },
+  author: { textAlign: 'right', marginTop: 8, fontStyle: 'italic', color: '#777' },
+  memeImage: {
+    height: 250,
+    width: '100%',
+    resizeMode: 'contain',
+    borderRadius: 10,
+    marginTop: 10
+  }
 });

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Home from './screens/Home';
 import FAQ from './screens/FAQ';
-import About from './screens/About';
+import Main from './screens/Main';
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('Home');
@@ -11,10 +11,11 @@ const App = () => {
     switch (activeTab) {
       case 'Home':
         return <Home />;
-      case 'FAQ':
+      
+      case 'Main':
+        return <Main />;
+        case 'FAQ':
         return <FAQ />;
-      case 'About':
-        return <About />;
       default:
         return null;
     }
@@ -24,7 +25,7 @@ const App = () => {
     <View style={styles.container}>
       <View style={styles.content}>{renderContent()}</View>
       <View style={styles.bottomTabs}>
-        {['Home', 'FAQ', 'About'].map((tab) => (
+        {['Home', 'Main', 'FAQ'].map((tab) => (
           <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)} style={styles.tabButton}>
             <Text style={[styles.tabText, activeTab === tab && styles.activeTab]}>{tab}</Text>
           </TouchableOpacity>
