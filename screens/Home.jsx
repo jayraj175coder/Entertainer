@@ -80,7 +80,7 @@ const Home = () => {
           <TouchableOpacity onPress={() => Linking.openURL(meme.postLink)}>
             <Image source={{ uri: meme.url }} style={styles.memeImage} />
           </TouchableOpacity>
-          <Text style={styles.author}>From r/{meme.subreddit}</Text>
+          {/* <Text style={styles.author}>From r/{meme.subreddit}</Text> */}
         </View>
       )}
        {quote && (
