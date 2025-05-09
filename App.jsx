@@ -11,7 +11,6 @@ const App = () => {
     switch (activeTab) {
       case 'Home':
         return <Home />;
-      
       case 'Main':
         return <Main />;
         case 'FAQ':

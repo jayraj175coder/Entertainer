@@ -120,7 +120,7 @@ const Home = () => {
                 <Pressable 
                     style={styles.drawerItem}
                     onPress={() => {
-                        Linking.openURL('https://github.com/jayraj175coder');
+                        Linking.openURL('https://github.com/jayraj175coder/entertainer');
                         drawer.current.closeDrawer();
                     }}
                 >
@@ -141,13 +141,13 @@ const Home = () => {
                     <Text style={styles.drawerItemText}>Contact Support</Text>
                 </Pressable>
                 
-                <View style={styles.drawerFooter}>
+                {/* <View style={styles.drawerFooter}>
                     <Button 
                         title="Close" 
                         onPress={() => drawer.current.closeDrawer()} 
                         color="#fff"
                     />
-                </View>
+                </View> */}
             </SafeAreaView>
         // </LinearGradient>
     );
@@ -155,7 +155,7 @@ const Home = () => {
     return (
         <DrawerLayoutAndroid
             ref={drawer}
-            drawerWidth={300}
+            drawerWidth={200}
             drawerPosition={DrawerLayoutAndroid.positions.Left}
             renderNavigationView={navigationView}
             statusBarBackgroundColor="#6200ea"
@@ -179,8 +179,8 @@ const Home = () => {
                             onPress={() => drawer.current.openDrawer()}
                         >
                             {/* <Icon name="menu" size={28} color="#fff" /> */}
-                            <Text>Menu</Text>
-                        </TouchableOpacity>
+                            <Text style={[{ fontSize: 28, color: '#000000' }, styles.menuBtn]}>☰</Text>
+                            </TouchableOpacity>
                         <Text style={styles.heading}>Daily Buzz</Text>
                         <TouchableOpacity 
                             // style={styles.refreshButton}
@@ -232,14 +232,14 @@ const Home = () => {
                                     {/* <Icon name="share" size={24} color="#6200ea" /> */}
                                 </TouchableOpacity>
                             </View>
-                            <Text style={styles.cardText}>{meme.title}</Text>
-                            <TouchableOpacity onPress={() => Linking.openURL(meme.postLink)}>
+                            {/* <Text style={styles.cardText}>{meme.title}</Text> */}
+                            {/* <TouchableOpacity onPress={() => Linking.openURL(meme.postLink)}> */}
                                 <Image 
                                     source={{ uri: meme.url }} 
                                     style={styles.memeImage} 
-                                    resizeMode="contain"
+                                    resizeMode="stretch"
                                 />
-                            </TouchableOpacity>
+                            {/* </TouchableOpacity> */}
                         </View>
                     )}
 
@@ -336,12 +336,15 @@ const styles = StyleSheet.create({
     heading: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#fff',
+        color: 'red',
+        paddingRight:30,
+
     },
     subheading: {
         fontSize: 14,
-        color: 'rgba(255,255,255,0.8)',
+        color: 'rgba(49, 8, 8, 0.8)',
         marginTop: 5,
+        paddingLeft:30,
         textAlign: 'center',
     },
     contentContainer: {
@@ -381,6 +384,13 @@ const styles = StyleSheet.create({
         color: '#E91E63',
         marginTop: 10,
         fontStyle: 'italic',
+    },
+    menuBtn:{
+        // paddingHorizontal:,
+        paddingVertical:10,
+        paddingHorizontal: 10,
+
+
     },
     quoteText: {
         fontSize: 16,
@@ -430,11 +440,11 @@ const styles = StyleSheet.create({
     drawerTitle: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#fff',
+        color: 'red',
     },
     drawerSubtitle: {
         fontSize: 14,
-        color: 'rgba(255,255,255,0.8)',
+        color: 'rgba(64, 15, 15, 0.8)',
         marginTop: 5,
     },
     drawerItem: {
