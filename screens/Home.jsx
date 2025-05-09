@@ -33,34 +33,30 @@ const Home = () => {
     const drawer = useRef(null);
 
     // Fetch data function
-   
+    const fetchData = async () => {
+      try {
+        const jokeRes = await fetch('https://official-joke-api.appspot.com/random_joke');
+        const memeRes = await fetch('https://meme-api.com/gimme');
+        const quoteRes = await fetch('https://uselessfacts.jsph.pl/random.json?language=en');
+        
+        if (!jokeRes.ok || !memeRes.ok) {
+          throw new Error('One or more API requests failed');
+        }
 
-        const fetchData = async () => {
-          try {
-            const jokeRes = await fetch('https://official-joke-api.appspot.com/random_joke');
-            const memeRes = await fetch('https://meme-api.com/gimme');
-                    //   fetch(''),
-     const quoteRes = await fetch('https://uselessfacts.jsph.pl/random.json?language=en');
-    
-      
-            if (!jokeRes.ok || !memeRes.ok) {
-              throw new Error('One or more API requests failed');
-            }
-      
-            const jokeData = await jokeRes.json();
-            const memeData = await memeRes.json();
-            const quoteData= await quoteRes.json();
-      
-            setJoke(jokeData);
-            setMeme(memeData);
-            setFact(quoteData);
-            setLoading(false);
-          } catch (error) {
-            console.error('Error fetching data:', error);
-            setError(error.message);
-            setLoading(false);
-          }
-        };
+        const jokeData = await jokeRes.json();
+        const memeData = await memeRes.json();
+        const quoteData = await quoteRes.json();
+
+        setJoke(jokeData);
+        setMeme(memeData);
+        setFact(quoteData);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setError(error.message);
+        setLoading(false);
+      }
+    };
       
     // Refresh control
     const onRefresh = useCallback(() => {
@@ -84,13 +80,23 @@ const Home = () => {
         }
     };
 
+    // Support functions
+    const handleSupport = (platform) => {
+        let url = '';
+        switch(platform) {
+            case 'paypal':
+                url = 'https://paypal.me/yourpaypal';
+                break;
+            default:
+                return;
+        }
+        Linking.openURL(url).catch(err => Alert.alert('Error', 'Could not open the link'));
+    };
+
     // Loading state
     if (loading) {
         return (
-            // <LinearGradient colors={['#6200ea', '#3700b3']} style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#fff" />
-                // <Text style={styles.loadingText}>Loading your daily dose of fun...</Text>
-            // </LinearGradient>
+            <ActivityIndicator size="large" color="#fff" />
         );
     }
 
@@ -98,7 +104,6 @@ const Home = () => {
     if (error) {
         return (
             <View style={styles.errorContainer}>
-                {/* <Icon name="error-outline" size={50} color="#ff3d00" /> */}
                 <Text style={styles.errorText}>Oops! Something went wrong</Text>
                 <Text style={styles.errorMessage}>{error}</Text>
                 <Pressable style={styles.retryButton} onPress={fetchData}>
@@ -110,46 +115,44 @@ const Home = () => {
 
     // Navigation drawer content
     const navigationView = () => (
-        // <LinearGradient colors={['#6200ea', '#3700b3']} style={styles.drawerContainer}>
-            <SafeAreaView style={styles.navigationContainer}>
-                <View style={styles.drawerHeader}>
-                    <Text style={styles.drawerTitle}>Daily Buzz</Text>
-                    <Text style={styles.drawerSubtitle}>Your daily dose of fun</Text>
-                </View>
-                
-                <Pressable 
-                    style={styles.drawerItem}
-                    onPress={() => {
-                        Linking.openURL('https://github.com/jayraj175coder/entertainer');
-                        drawer.current.closeDrawer();
-                    }}
-                >
-                    {/* <Icon name="code" size={24} color="#fff" /> */}
-                    <Text>Code</Text>
-                    <Text style={styles.drawerItemText}>View Source Code</Text>
-                </Pressable>
-                
-                <Pressable 
-                    style={styles.drawerItem}
-                    onPress={() => {
-                        Linking.openURL('mailto:jayrajsanas175@gmail.com');
-                        drawer.current.closeDrawer();
-                    }}
-                >
-                    {/* <Icon name="email" size={24} color="#fff" /> */}
-            <Text>Email</Text>
-                    <Text style={styles.drawerItemText}>Contact Support</Text>
-                </Pressable>
-                
-                {/* <View style={styles.drawerFooter}>
-                    <Button 
-                        title="Close" 
-                        onPress={() => drawer.current.closeDrawer()} 
-                        color="#fff"
-                    />
-                </View> */}
-            </SafeAreaView>
-        // </LinearGradient>
+        <SafeAreaView style={styles.navigationContainer}>
+            <View style={styles.drawerHeader}>
+                <Text style={styles.drawerTitle}>Daily Buzz</Text>
+                <Text style={styles.drawerSubtitle}>Your daily dose of fun</Text>
+            </View>
+            
+            <Pressable 
+                style={styles.drawerItem}
+                onPress={() => {
+                    Linking.openURL('https://github.com/jayraj175coder/entertainer');
+                    drawer.current.closeDrawer();
+                }}
+            >
+                <Text>Code</Text>
+                <Text style={styles.drawerItemText}>View Source Code</Text>
+            </Pressable>
+            
+            <Pressable 
+                style={styles.drawerItem}
+                onPress={() => {
+                    Linking.openURL('mailto:jayrajsanas175@gmail.com');
+                    drawer.current.closeDrawer();
+                }}
+            >
+                <Text>Email</Text>
+                <Text style={styles.drawerItemText}>Contact Support</Text>
+            </Pressable>
+
+            <Pressable 
+                style={styles.drawerItem}
+                onPress={() => {
+                    drawer.current.closeDrawer();
+                }}
+            >
+                <Text>💖</Text>
+                <Text style={styles.drawerItemText}>Support Us</Text>
+            </Pressable>
+        </SafeAreaView>
     );
 
     return (
@@ -172,37 +175,28 @@ const Home = () => {
                 }
             >
                 {/* App Header */}
-                {/* <LinearGradient colors={['#6200ea', '#3700b3']} style={styles.header}> */}
-                    <View style={styles.headerContent}>
-                        <TouchableOpacity 
-                            style={styles.menuButton}
-                            onPress={() => drawer.current.openDrawer()}
-                        >
-                            {/* <Icon name="menu" size={28} color="#fff" /> */}
-                            <Text style={[{ fontSize: 28, color: '#000000' }, styles.menuBtn]}>☰</Text>
-                            </TouchableOpacity>
-                        <Text style={styles.heading}>Daily Buzz</Text>
-                        <TouchableOpacity 
-                            // style={styles.refreshButton}
-                            onPress={onRefresh}
-                        >
-                            
-
-                            {/* <Icon name="refresh" size={28} color="#fff" /> */}
-                        </TouchableOpacity>
-                    </View>
-                    <Text style={styles.subheading}>Your daily dose of fun content</Text>
-                {/* </LinearGradient> */}
+                <View style={styles.headerContent}>
+                    <TouchableOpacity 
+                        style={styles.menuButton}
+                        onPress={() => drawer.current.openDrawer()}
+                    >
+                        <Text style={[{ fontSize: 28, color: '#000000' }, styles.menuBtn]}>☰</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.heading}>Daily Buzz</Text>
+                    <TouchableOpacity onPress={onRefresh}>
+                        {/* Refresh icon would go here */}
+                    </TouchableOpacity>
+                </View>
+                <Text style={styles.subheading}>Your daily dose of fun content</Text>
 
                 {/* Content Cards */}
                 <View style={styles.contentContainer}>
                     {joke && (
                         <View style={styles.card}>
                             <View style={styles.cardHeader}>
-                                {/* <Icon name="sentiment-very-satisfied" size={24} color="#6200ea" /> */}
                                 <Text style={styles.cardTitle}>Joke of the Day</Text>
                                 <TouchableOpacity onPress={() => onShare(`${joke.setup}\n\n${joke.punchline}`)}>
-                                    {/* <Icon name="share" size={24} color="#6200ea" /> */}
+                                    {/* Share icon would go here */}
                                 </TouchableOpacity>
                             </View>
                             <Text style={styles.cardText}>{joke.setup}</Text>
@@ -213,10 +207,9 @@ const Home = () => {
                     {fact && (
                         <View style={styles.card}>
                             <View style={styles.cardHeader}>
-                                {/* <Icon name="lightbulb-outline" size={24} color="#6200ea" /> */}
                                 <Text style={styles.cardTitle}>Fun Fact</Text>
                                 <TouchableOpacity onPress={() => onShare(fact.text)}>
-                                    {/* <Icon name="share" size={24} color="#6200ea" /> */}
+                                    {/* Share icon would go here */}
                                 </TouchableOpacity>
                             </View>
                             <Text style={styles.cardText}>{fact.text}</Text>
@@ -226,36 +219,39 @@ const Home = () => {
                     {meme && (
                         <View style={styles.card}>
                             <View style={styles.cardHeader}>
-                                {/* <Icon name="image" size={24} color="#6200ea" /> */}
                                 <Text style={styles.cardTitle}>Meme of the Day</Text>
                                 <TouchableOpacity onPress={() => onShare(meme.url)}>
-                                    {/* <Icon name="share" size={24} color="#6200ea" /> */}
+                                    {/* Share icon would go here */}
                                 </TouchableOpacity>
                             </View>
-                            {/* <Text style={styles.cardText}>{meme.title}</Text> */}
-                            {/* <TouchableOpacity onPress={() => Linking.openURL(meme.postLink)}> */}
-                                <Image 
-                                    source={{ uri: meme.url }} 
-                                    style={styles.memeImage} 
-                                    resizeMode="stretch"
-                                />
-                            {/* </TouchableOpacity> */}
+                            <Image 
+                                source={{ uri: meme.url }} 
+                                style={styles.memeImage} 
+                                resizeMode="stretch"
+                            />
                         </View>
                     )}
 
-                    {/* {quote && (
-                        <View style={styles.card}>
-                            <View style={styles.cardHeader}>
-                                <Icon name="format-quote" size={24} color="#6200ea" />
-                                <Text style={styles.cardTitle}>Inspiring Quote</Text>
-                                <TouchableOpacity onPress={() => onShare(`"${quote.text}" - ${quote.author}`)}>
-                                    <Icon name="share" size={24} color="#6200ea" />
-                                </TouchableOpacity>
-                            </View>
-                            <Text style={styles.quoteText}>"{quote.text}"</Text>
-                            <Text style={styles.author}>— {quote.author}</Text>
+                    {/* Support Us Section */}
+                    {/* <View style={styles.card}>
+                        <View style={styles.cardHeader}>
+                            <Text style={styles.cardTitle}>Support Our Work</Text>
                         </View>
-                    )} */}
+                        <Text style={styles.cardText}>
+                            Enjoying Daily Buzz? Consider supporting us to help keep the app running and ad-free!
+                        </Text>
+                        
+                        <View style={styles.supportButtonsContainer}>
+                            <Pressable 
+                                style={[styles.supportButton, {backgroundColor: '#0070ba'}]}
+                                onPress={() => handleSupport('paypal')}
+                            >
+                                <Text style={styles.supportButtonText}>PayPal</Text>
+                            </Pressable>
+                            
+                            
+                        </View>
+                    </View> */}
 
                     {/* App Footer */}
                     <View style={styles.footer}>
@@ -338,7 +334,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'red',
         paddingRight:30,
-
     },
     subheading: {
         fontSize: 14,
@@ -377,6 +372,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         lineHeight: 24,
         color: '#555',
+        marginBottom: 15,
     },
     punchline: {
         fontSize: 16,
@@ -385,12 +381,9 @@ const styles = StyleSheet.create({
         marginTop: 10,
         fontStyle: 'italic',
     },
-    menuBtn:{
-        // paddingHorizontal:,
+    menuBtn: {
         paddingVertical:10,
         paddingHorizontal: 10,
-
-
     },
     quoteText: {
         fontSize: 16,
@@ -466,6 +459,24 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         paddingHorizontal: 20,
+    },
+    supportButtonsContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        marginTop: 15,
+    },
+    supportButton: {
+        paddingVertical: 12,
+        paddingHorizontal: 15,
+        borderRadius: 8,
+        marginBottom: 10,
+        minWidth: '48%',
+        alignItems: 'center',
+    },
+    supportButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
     },
 });
 
